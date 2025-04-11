@@ -17,7 +17,11 @@ function FormElement() {
     const type =
       (typeref.current?.value as "hard" | "normal" | "easy") || "normal";
 
-    const newTodo: Todo = {
+    if (!title || !description) {
+      alert("malumotlarni toldiring");
+      return;
+    }
+    let newTodo: Todo = {
       id: Math.floor(Math.random() * 1000),
       title,
       description,
@@ -27,14 +31,25 @@ function FormElement() {
 
     setTodos((prev) => [...prev, newTodo]);
 
-    if (titleref.current) titleref.current.value = "";
-    if (descref.current) descref.current.value = "";
-    if (compref.current) compref.current.checked = false;
-    if (typeref.current) typeref.current.value = "normal";
+    if (titleref.current) {
+      titleref.current.value = "";
+    }
+    if (descref.current) {
+      descref.current.value = "";
+    }
+    if (compref.current) {
+      compref.current.checked = false;
+    }
+    if (typeref.current) {
+      typeref.current.value = "normal";
+    }
   };
 
   const handleDelete = (id: number) => {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    let exit = confirm("rostanham ochirmoqchimisiz?");
+    if (exit) {
+      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    }
   };
 
   return (
@@ -98,30 +113,14 @@ function FormElement() {
             <div>
               <h3 className="text-xl">{todo.title}</h3>
               <p className="text-sm">{todo.description}</p>
-              <p
-                className={`text-sm ${
-                  todo.completed ? "text-green-500" : "text-red-500"
-                }`}
-              >
-                {todo.completed ? "Completed" : "Not Completed"}
-              </p>
-              <p
-                className={`text-sm ${
-                  todo.type === "hard"
-                    ? "text-red-500"
-                    : todo.type === "easy"
-                    ? "text-green-500"
-                    : "text-yellow-500"
-                }`}
-              >
-                {todo.type.charAt(0).toUpperCase() + todo.type.slice(1)} Task
-              </p>
+              <p>{todo.completed ? "completed" : "net completed"}</p>
+              <p>{todo.type} Task</p>
             </div>
 
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => handleDelete(todo.id)}
-                className="bg-red-500 text-white px-2 py-1 rounded"
+                className="cursor-pointer bg-blue-600 text-white px-2 py-1 rounded"
               >
                 Delete
               </button>
