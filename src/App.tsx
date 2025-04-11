@@ -1,7 +1,10 @@
+import FormElement from "./components/formElement"
 
 function App() {
   return (
-    <div>App</div>
+    <div>
+      <FormElement />
+    </div>
   )
 }
 
