@@ -1,34 +1,47 @@
-import { FormEvent, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Todo } from "../interfase";
 
 function FormElement() {
-  let [todos, setTodos] = useState<Todo[]>([]);
-  let titleref = useRef<HTMLInputElement>(null);
-  let descref = useRef<HTMLInputElement>(null);
-  let compref = useRef<HTMLInputElement>(null);
-  let typeref = useRef<HTMLSelectElement>(null);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const titleref = useRef<HTMLInputElement>(null);
+  const descref = useRef<HTMLInputElement>(null);
+  const compref = useRef<HTMLInputElement>(null);
+  const typeref = useRef<HTMLSelectElement>(null);
 
-  function submit(e: FormEvent) {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    let todo: Todo = {
-      completed: compref.current?.checked || false,
-      description: descref.current?.value || "",
-      title: titleref.current?.value || "",
-      type: (typeref.current?.value as "hard" | "normal" | "easy") || "hard",
-      id: Math.trunc(Math.random() * 1000),
+    const title = titleref.current?.value || "";
+    const description = descref.current?.value || "";
+    const completed = compref.current?.checked || false;
+    const type = typeref.current?.value || "normal";
+
+    const newTodo: Todo = {
+      id: Math.floor(Math.random() * 1000),
+      title,
+      description,
+      completed,
+      type,
     };
 
-    console.log(todo);
+    setTodos((prev) => [...prev, newTodo]);
 
-    setTodos((prev: Todo[]) => {
-      return [...prev, todo];
-    });
-  }
+    if (titleref.current) titleref.current.value = "";
+    if (descref.current) descref.current.value = "";
+    if (compref.current) compref.current.checked = false;
+    if (typeref.current) typeref.current.value = "normal";
+  };
+
+  const handleDelete = (id: number) => {
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <form onSubmit={submit} className="bg-white shadow-md rounded-lg p-6 w-full max-w-md space-y-4 border-2 border-gray-200">
+    <div className="p-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-md rounded-lg p-6 w-full max-w-md space-y-4 border-2 border-gray-200"
+      >
         <div>
           <input
             ref={titleref}
@@ -40,8 +53,8 @@ function FormElement() {
 
         <div>
           <input
-            type="text"
             ref={descref}
+            type="text"
             placeholder="Description"
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
@@ -49,8 +62,8 @@ function FormElement() {
 
         <div className="flex items-center gap-2">
           <input
-            type="checkbox"
             ref={compref}
+            type="checkbox"
             className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
           />
           <label className="text-gray-700">Complete</label>
@@ -58,13 +71,12 @@ function FormElement() {
 
         <div>
           <select
-            name="type"
             ref={typeref}
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
           >
-            <option value="hard">hard</option>
-            <option value="normal">normal</option>
-            <option value="easy">easy</option>
+            <option value="hard">Hard</option>
+            <option value="normal">Normal</option>
+            <option value="easy">Easy</option>
           </select>
         </div>
 
@@ -72,9 +84,50 @@ function FormElement() {
           type="submit"
           className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
-          click
+          Add Todo
         </button>
       </form>
+
+      <ul className="mt-4">
+        {todos.map((todo) => (
+          <li
+            key={todo.id}
+            className="flex justify-between items-center bg-gray-200 p-4 my-2 rounded"
+          >
+            <div>
+              <h3 className="text-xl">{todo.title}</h3>
+              <p className="text-sm">{todo.description}</p>
+              <p
+                className={`text-sm ${
+                  todo.completed ? "text-green-500" : "text-red-500"
+                }`}
+              >
+                {todo.completed ? "Completed" : "Not Completed"}
+              </p>
+              <p
+                className={`text-sm ${
+                  todo.type === "hard"
+                    ? "text-red-500"
+                    : todo.type === "easy"
+                    ? "text-green-500"
+                    : "text-yellow-500"
+                }`}
+              >
+                {todo.type.charAt(0).toUpperCase() + todo.type.slice(1)} Task
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => handleDelete(todo.id)}
+                className="bg-red-500 text-white px-2 py-1 rounded"
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
