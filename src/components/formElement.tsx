@@ -14,7 +14,8 @@ function FormElement() {
     const title = titleref.current?.value || "";
     const description = descref.current?.value || "";
     const completed = compref.current?.checked || false;
-    const type = typeref.current?.value || "normal";
+    const type =
+      (typeref.current?.value as "hard" | "normal" | "easy") || "normal";
 
     const newTodo: Todo = {
       id: Math.floor(Math.random() * 1000),
